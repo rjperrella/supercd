@@ -30,12 +30,12 @@ cd --
 
 Press the number that corresponds to your directory.
 
+If you change directories to a file, it will cd to the directory portion of that filename. This makes it easy to cd to a directory by just pasting the file's name on the command line.
+
+Also, if you have the "dialog" program installed, it will automatically use it to product a selection list.
+
 ## TODO
 
-This version does not include the dialog program, but it will be added so that selecting a directory
-can be done via a menu.
-
-Also, I want to make this program more tolerant of changing directories to a file. If you do that, just drop off the filename
-and cd again.  THis makes cutting and pasting a filename onto the command line more tolerant.
+Perhaps provide an option to ignore dialog if you don't want to use it...
 
 
