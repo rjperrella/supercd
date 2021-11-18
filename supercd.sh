@@ -55,36 +55,40 @@ function _supercd {
     local taglist
     local rc
     if [[ "$1" = "--" ]]; then
-        if type dialog 2>&1 >/dev/null; then
-            taglist=$(supercd_maketaggedlist)
-            trap "rm -- $taglist" return
-            # echo "taglist is // $taglist //"
-            if choice=$(dialog --stdout --menu "Choose a directory" 0 0 0 --file $taglist )
-            then 
-                #echo "choice is $choice"
-                #echo "dir is ${_CD_HISTORY[$choice]}"
-                builtin cd ${_CD_HISTORY[$choice]}
-            else
-                echo "no change"
-            fi
+        if [[ $# -gt 2 ]]; then # in case anybody does a cd -- directory
+            builtin cd "$@"
         else
-            supercd_text
+            if type dialog 2>&1 >/dev/null; then
+                taglist=$(supercd_maketaggedlist)
+                trap "rm -- $taglist" return
+                # echo "taglist is // $taglist //"
+                if choice=$(dialog --stdout --menu "Choose a directory" 0 0 0 --file $taglist )
+                then 
+                    #echo "choice is $choice"
+                    #echo "dir is ${_CD_HISTORY[$choice]}"
+                    builtin cd ${_CD_HISTORY[$choice]}
+                else
+                    echo "no change"
+                fi
+            else
+                supercd_text
+            fi
         fi
     elif [[ -z "$1" ]]; then
         builtin cd "$HOME"
         supercd_cdadd "$PWD"
     else
         local d="$1"
-        if [[ -d $d ]]; then
+        if [[ "$d" = "-" ]]; then
+            builtin cd -
+        elif [[ -d $d ]]; then
             builtin cd "$1"
+        elif [[ -f $d ]]; then
+            d=$(dirname "$d")
+            builtin cd "$d"
         else
-            if [[ -f $d ]]; then
-                d=$(dirname "$d")
-                builtin cd "$d"
-            else
-                # i don't know what you passed it but I'm not going to cd there...
-                return
-            fi
+            # i don't know what you passed it but I'm not going to cd there...
+            return
         fi
         supercd_cdadd "$PWD"
     fi
