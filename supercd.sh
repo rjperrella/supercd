@@ -74,7 +74,18 @@ function _supercd {
         builtin cd "$HOME"
         supercd_cdadd "$PWD"
     else
-        builtin cd "$1"
+        local d="$1"
+        if [[ -d $d ]]; then
+            builtin cd "$1"
+        else
+            if [[ -f $d ]]; then
+                d=$(dirname "$d")
+                builtin cd "$d"
+            else
+                # i don't know what you passed it but I'm not going to cd there...
+                return
+            fi
+        fi
         supercd_cdadd "$PWD"
     fi
 }
